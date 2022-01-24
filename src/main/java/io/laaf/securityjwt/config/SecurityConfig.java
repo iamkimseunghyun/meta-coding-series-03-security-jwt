@@ -3,6 +3,7 @@ package io.laaf.securityjwt.config;
 import io.laaf.securityjwt.filter.MyFilter1;
 import io.laaf.securityjwt.filter.MyFilter3;
 import io.laaf.securityjwt.jwt.JwtAuthenticationFilter;
+import io.laaf.securityjwt.jwt.JwtAuthorizationFilter;
 import io.laaf.securityjwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,31 +24,32 @@ import org.springframework.security.web.context.SecurityContextPersistenceFilter
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
+    @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private final CorsConfig corsConfig;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    private final CorsConfig corsConfig;
-
-
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 //        http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class);
         http
-                .addFilter(corsConfig.corsFilter())
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .addFilter(corsConfig.corsFilter())
 
                 .formLogin().disable()
                 .httpBasic().disable()
 
                 .addFilter(new JwtAuthenticationFilter(authenticationManager())) // AuthenticationManger 필요
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
                 .authorizeRequests()
                 .antMatchers("/api/v1/user/**")
                 .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
@@ -56,5 +58,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/admin/**")
                 .access("hasRole('ROLE_ADMIN')")
                 .anyRequest().permitAll();
+
+
+
+
     }
 }
