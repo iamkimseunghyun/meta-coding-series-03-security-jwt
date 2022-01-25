@@ -36,7 +36,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     // 인증이나 권한이 필요한 주소 요청이 있을 떄 해당 필터를 타게 됨.
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain chain)
+            throws IOException, ServletException {
+
         log.info("인증이나 권한이 필요한 주소 요청이 됨.");
 
         String jwtHeader = request.getHeader("Authorization");
@@ -56,6 +60,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         if (username != null) {
             UserJWT userEntity = userRepository.findByUsername(username);
 
+            log.info("응답하라 119");
             PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
 
             // Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어 준다.
@@ -64,7 +69,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
             // 강제로 시큐리티의 세션에 접근하여 Authentication 객체를 저장.
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
+            log.info("그니깐 다 됭거징?");
         }
     }
 }

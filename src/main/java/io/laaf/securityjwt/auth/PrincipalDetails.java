@@ -19,14 +19,19 @@ public class PrincipalDetails implements UserDetails {
         this.user = user;
     }
 
+    public UserJWT getUser() {
+        return user;
+    }
+
+
     @Override
     public String getPassword() {
-        return null;
-    }
+        return user.getPassword();
+    } // 여기서 찐빠가 나서 오랜 시간 삽질했다. 피곤할 때 놓친다.
 
     @Override
     public String getUsername() {
-        return getUsername();
+        return user.getUsername();
     }
 
     @Override
@@ -53,7 +58,7 @@ public class PrincipalDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         user.getRoleList().forEach(r -> {
-            authorities.add(()->{ return r;});
+            authorities.add(() -> r);
         });
         return authorities;
     }

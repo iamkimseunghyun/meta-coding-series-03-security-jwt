@@ -20,9 +20,12 @@ public class PrincipalDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.info("PrincipalDetailsService의 loadUserByUsername()");
+        log.info("유저리포지토리에서 유저네임으로 가입명부 찾음");
         UserJWT userEntity = userRepository.findByUsername(username);
-        log.info("프린시펄디테일 서비스까지 왔냐구? 유저엔티티가 뭐야? -> {}", userEntity);
-        return new PrincipalDetails(userEntity);
+        log.info("유저리포지토리에서 찾아온 거 -> {}", userEntity);
+        if (userEntity != null) {
+            return new PrincipalDetails(userEntity);
+        }
+        return null;
     }
 }
